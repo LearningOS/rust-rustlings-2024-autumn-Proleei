@@ -14,7 +14,6 @@
 // Execute `rustlings hint hashmaps2` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
 
 use std::collections::HashMap;
 
@@ -40,6 +39,33 @@ fn fruit_basket(basket: &mut HashMap<Fruit, u32>) {
         // TODO: Insert new fruits if they are not already present in the
         // basket. Note that you are not allowed to put any type of fruit that's
         // already present!
+        /*
+            It’s common to check whether a particular key already exists 
+            in the hash map with a value and then to take the following 
+            actions: if the key does exist in the hash map, the existing 
+            value should remain the way it is; if the key doesn’t exist, 
+            insert it and a value for it.
+
+            Hash maps have a special API for this called entry that takes 
+            the key you want to check as a parameter. The return value of 
+            the entry method is an enum called Entry that represents a 
+            value that might or might not exist. Let’s say we want to 
+            check whether the key for the Yellow team has a value 
+            associated with it. If it doesn’t, we want to insert the value
+            50, and the same for the Blue team. Using the entry API, the 
+            code looks like Listing below.
+
+            // use std::collections::HashMap;
+
+            // let mut scores = HashMap::new();
+            // scores.insert(String::from("Blue"), 10);
+
+            // scores.entry(String::from("Yellow")).or_insert(50);
+            // scores.entry(String::from("Blue")).or_insert(50);
+
+            // println!("{scores:?}");
+         */
+       basket.entry(fruit).or_insert(1);
     }
 }
 
