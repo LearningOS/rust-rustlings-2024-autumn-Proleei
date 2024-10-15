@@ -52,8 +52,32 @@ enum ParsePersonError {
 impl FromStr for Person {
     type Err = ParsePersonError;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        if s.len() == 0 { // String s is empty
+            return Err(ParsePersonError::Empty);
+        } else {
+            let mut iter = s.split(","); // create an iterator.
+            if let Some(ref name_get) = iter.next() {
+                if *name_get.is_empty() { // name is empty string
+                    return Err(ParsePersonError::NoName);
+                }
+            };
+            if let Some(age) = iter.next() {
+                if iter.next() != None { // no following elements after age string.
+                    return Err(ParsePersonError::BadLen);
+                }
+                let num: Result<i32, std::num::ParseIntError> = age.parse();
+                match num {
+                    Ok(age) => { // get age
+                        Ok(Person{name: name_get.to_string(), age: age})
+                    },
+                    Err(e) => Err(ParsePersonError::ParseInt(e))
+                }
+            } else { // anything else happend
+                return Err(ParsePersonError::BadLen);
+            }
+        }
+        }
     }
-}
 
 fn main() {
     let p = "Mark,20".parse::<Person>().unwrap();
