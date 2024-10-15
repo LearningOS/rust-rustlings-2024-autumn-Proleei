@@ -31,7 +31,6 @@ enum ParsePersonError {
     ParseInt(ParseIntError),
 }
 
-// I AM NOT DONE
 
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
@@ -56,8 +55,15 @@ impl FromStr for Person {
             return Err(ParsePersonError::Empty);
         } else {
             let mut iter = s.split(","); // create an iterator.
-            if let Some(ref name_get) = iter.next() {
-                if *name_get.is_empty() { // name is empty string
+            let name_get = match iter.next() {
+                Some(x) => {
+                    if x.is_empty() {
+                        return Err(ParsePersonError::NoName)
+                    } else {
+                        x.to_string()
+                    }
+                }
+                None => {
                     return Err(ParsePersonError::NoName);
                 }
             };
@@ -68,7 +74,7 @@ impl FromStr for Person {
                 let num: Result<i32, std::num::ParseIntError> = age.parse();
                 match num {
                     Ok(age) => { // get age
-                        Ok(Person{name: name_get.to_string(), age: age})
+                        Ok(Person{name: name_get, age: age as usize})
                     },
                     Err(e) => Err(ParsePersonError::ParseInt(e))
                 }
@@ -76,8 +82,8 @@ impl FromStr for Person {
                 return Err(ParsePersonError::BadLen);
             }
         }
-        }
     }
+}
 
 fn main() {
     let p = "Mark,20".parse::<Person>().unwrap();
