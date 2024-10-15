@@ -2,9 +2,10 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
+use std::borrow::BorrowMut;
 use std::fmt::{self, Display, Formatter};
+use std::ops::Deref;
 use std::ptr::NonNull;
 use std::vec::*;
 
@@ -69,15 +70,39 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
+	pub fn merge(mut list_a:LinkedList<T>, mut list_b:LinkedList<T>) -> Self
+    where T:PartialOrd + Clone,
 	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+        let mut new_list: LinkedList<T> = LinkedList::new();
+        let mut i: i32 = 0;
+        let mut j: i32 = 0;
+
+        while (i as u32) < list_a.length && (j as u32) < list_b.length {
+            let value1 = list_a.get(i).unwrap();
+            let value2 = list_b.get(j).unwrap();
+            if *value1 <= *value2 {
+                new_list.add(value1.clone());
+                i += 1;
+            } else {
+                new_list.add(value2.clone());
+                j += 1;
+            }
         }
-	}
+
+        while (i as u32) < list_a.length {
+            let value = list_a.get(i).unwrap();
+            new_list.add(value.clone());
+            i += 1;
+        }
+
+        while (j as u32) < list_b.length {
+            let value = list_b.get(j).unwrap();
+            new_list.add(value.clone());
+            j += 1;
+        }
+
+        new_list
+    }
 }
 
 impl<T> Display for LinkedList<T>
