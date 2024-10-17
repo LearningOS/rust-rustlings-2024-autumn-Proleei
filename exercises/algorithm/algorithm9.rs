@@ -2,7 +2,6 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -38,16 +37,27 @@ where
 
     pub fn add(&mut self, value: T) {
         //TODO
-        self.count += 1;
-        let mut child = self.len();
-        let mut parent = self.parent_idx(child.clone());
-        self.items.push(value);
-        while (self.comparator)(&self.items[child], &self.items[parent]) {
-            //let tmp = self.items[child];
-            std::mem::swap(&mut self.items[child], &mut self.items[parent]);
-            child = parent;
-            parent = self.parent_idx(child);
-        }
+        // self.count += 1;
+        // let mut child = self.len();
+        // let mut parent = self.parent_idx(child.clone());
+        // self.items.push(value);
+        // while (self.comparator)(&self.items[child], &self.items[parent]) {
+        //     //let tmp = self.items[child];
+        //     std::mem::swap(&mut self.items[child], &mut self.items[parent]);
+        //     child = parent;
+        //     parent = self.parent_idx(child);
+        // }
+                // 增加元素到向量末尾
+                self.items.push(value);
+                self.count += 1;
+        
+                // 上浮新元素以维持堆的性质
+                let mut idx = self.len();
+                while idx > 1 && (self.comparator)(&self.items[idx], &self.items[self.parent_idx(idx)]) {
+                    let parent_idx = self.parent_idx(idx);
+                    self.items.swap(idx, parent_idx);
+                    idx = self.parent_idx(idx);
+                }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -68,8 +78,35 @@ where
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
         //TODO
+        let left = self.left_child_idx(idx);
+        let right = self.right_child_idx(idx);
 
+        // 只有左子节点存在的情况
+        if right > self.count {
+            return left;
+        }
+
+        // 比较左右子节点，返回较小的那个
+        if (self.comparator)(&self.items[left], &self.items[right]) {
+            left
+        } else {
+            right
+        }
     }
+
+    fn bubble_down(&mut self, mut idx: usize) {
+        while self.children_present(idx) {
+            let smallest_child_idx = self.smallest_child_idx(idx);
+
+            if !(self.comparator)(&self.items[smallest_child_idx], &self.items[idx]) {
+                break;
+            }
+
+            self.items.swap(idx, smallest_child_idx);
+            idx = smallest_child_idx;
+        }
+    }
+
 }
 
 impl<T> Heap<T>
@@ -89,13 +126,30 @@ where
 
 impl<T> Iterator for Heap<T>
 where
-    T: Default,
+    T: Default+Clone,
 {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
         //TODO
-		None
+		if self.is_empty() {
+            return None;
+        }
+
+        // 获取堆顶元素（最小值或最大值）
+        let top = self.items[1].clone();
+
+        // 将最后一个元素移到堆顶，并减少堆大小
+        let last = self.items.pop().unwrap();
+        self.count -= 1;
+
+        // 如果堆不为空，将最后一个元素放到堆顶并下沉
+        if !self.is_empty() {
+            self.items[1] = last;
+            self.bubble_down(1);
+        }
+
+        Some(top)
     }
 }
 

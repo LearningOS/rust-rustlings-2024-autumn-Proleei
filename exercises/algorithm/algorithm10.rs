@@ -2,7 +2,6 @@
 	graph
 	This problem requires you to implement a basic graph functio
 */
-// I AM NOT DONE
 
 use std::cell::RefMut;
 use std::collections::{HashMap, HashSet};
@@ -31,7 +30,22 @@ impl Graph for UndirectedGraph {
     }
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
         //TODO
-        let mut adj = self.adjacency_table_mutable();
+        // let mut adj = self.adjacency_table_mutable();
+        let (node_a, node_b, weight) = edge;
+
+        // 添加节点A和节点B，如果它们不存在
+        self.add_node(node_a);
+        self.add_node(node_b);
+
+        // 将无向边添加到邻接表中
+        self.adjacency_table_mutable()
+            .get_mut(node_a)
+            .unwrap()
+            .push((node_b.to_string(), weight)); // A -> B
+        self.adjacency_table_mutable()
+            .get_mut(node_b)
+            .unwrap()
+            .push((node_a.to_string(), weight)); // B -> A
     }
 }
 pub trait Graph {
@@ -40,26 +54,33 @@ pub trait Graph {
     fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>>;
     fn add_node(&mut self, node: &str) -> bool {
         //TODO
-        match self.adjacency_table_mutable().insert(node.to_string(), Vec::new()) {
-            None => true,
-            _ => false
+        // match self.adjacency_table_mutable().insert(node.to_string(), Vec::new()) {
+        //     None => true,
+        //     _ => false
+        // }
+        if self.contains(node) {
+            return false; // 节点已存在，返回false
         }
+
+        // 如果节点不存在，添加一个空的邻接列表
+        self.adjacency_table_mutable().insert(node.to_string(), Vec::new());
+        true // 添加成功，返回true
     }
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
         //TODO
-        let mut adj = self.adjacency_table_mutable();
-        let src = edge.0;
-        let dst = edge.1;
-        let weight = edge.2;
-        match adj.get(src) {
-            Some(v) => {
-                v.push((dst.to_string(), weight));
-            }
-            None => {
-                self.add_node(src);
-                self.add_edge((&src, &dst, weight));
-            }
-        }
+        // let mut adj = self.adjacency_table_mutable();
+        // let src = edge.0;
+        // let dst = edge.1;
+        // let weight = edge.2;
+        // match adj.get(src) {
+        //     Some(v) => {
+        //         v.push((dst.to_string(), weight));
+        //     }
+        //     None => {
+        //         self.add_node(src);
+        //         self.add_edge((&src, &dst, weight));
+        //     }
+        // }
     }
     fn contains(&self, node: &str) -> bool {
         self.adjacency_table().get(node).is_some()
