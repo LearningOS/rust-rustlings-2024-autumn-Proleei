@@ -4,6 +4,7 @@
 */
 // I AM NOT DONE
 
+use std::cell::RefMut;
 use std::collections::{HashMap, HashSet};
 use std::fmt;
 #[derive(Debug, Clone)]
@@ -30,6 +31,7 @@ impl Graph for UndirectedGraph {
     }
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
         //TODO
+        let mut adj = self.adjacency_table_mutable();
     }
 }
 pub trait Graph {
@@ -38,10 +40,26 @@ pub trait Graph {
     fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>>;
     fn add_node(&mut self, node: &str) -> bool {
         //TODO
-		true
+        match self.adjacency_table_mutable().insert(node.to_string(), Vec::new()) {
+            None => true,
+            _ => false
+        }
     }
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
         //TODO
+        let mut adj = self.adjacency_table_mutable();
+        let src = edge.0;
+        let dst = edge.1;
+        let weight = edge.2;
+        match adj.get(src) {
+            Some(v) => {
+                v.push((dst.to_string(), weight));
+            }
+            None => {
+                self.add_node(src);
+                self.add_edge((&src, &dst, weight));
+            }
+        }
     }
     fn contains(&self, node: &str) -> bool {
         self.adjacency_table().get(node).is_some()

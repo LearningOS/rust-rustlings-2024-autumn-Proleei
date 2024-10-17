@@ -18,7 +18,7 @@ where
 
 impl<T> Heap<T>
 where
-    T: Default,
+    T: Default
 {
     pub fn new(comparator: fn(&T, &T) -> bool) -> Self {
         Self {
@@ -38,6 +38,16 @@ where
 
     pub fn add(&mut self, value: T) {
         //TODO
+        self.count += 1;
+        let mut child = self.len();
+        let mut parent = self.parent_idx(child.clone());
+        self.items.push(value);
+        while (self.comparator)(&self.items[child], &self.items[parent]) {
+            //let tmp = self.items[child];
+            std::mem::swap(&mut self.items[child], &mut self.items[parent]);
+            child = parent;
+            parent = self.parent_idx(child);
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -58,7 +68,7 @@ where
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
         //TODO
-		0
+
     }
 }
 
